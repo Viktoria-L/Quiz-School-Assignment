@@ -1,0 +1,22 @@
+body {
+    background: white;
+    color: black;
+}
+h1 {
+    color:rebeccapurple;
+}
+.darkmode {
+    background-color: black;
+  color: white;
+
+}
+.changeModes {
+    border: 1px solid black;
+}
+.questionDiv {
+    border: 1px solid black;
+}
+
+.resultDiv {
+    border: 1px solid black;
+}
