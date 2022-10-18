@@ -5,7 +5,7 @@ let myQuestionArray = [
       a: "Sant",
       b: "Falskt",
     },
-    correctAnswer: "a",
+    correctAnswer: ["b"],
     type: "radio",
   },
   {
@@ -17,7 +17,7 @@ let myQuestionArray = [
       c: "Sverige",
       d: "Portugal",
     },
-    correctAnswer: "b",
+    correctAnswer: ["b"],
     type: "radio",
   },
   {
@@ -27,7 +27,7 @@ let myQuestionArray = [
       a: "Sant",
       b: "Falskt",
     },
-    correctAnswer: "a",
+    correctAnswer: ["a"],
     type: "radio",
   },
   {
@@ -38,7 +38,7 @@ let myQuestionArray = [
       c: "Psytrance",
       d: "Ambient",
     },
-    correctAnswer: ["a", "b", "d"],
+    correctAnswer: ["Minimal", "Acid", "Ambient"],
     type: "checkbox",
   },
   {
@@ -48,6 +48,7 @@ let myQuestionArray = [
       a: "Sant",
       b: "Falskt",
     },
+    correctAnswer: ["a"],
     type: "radio",
   },
   {
@@ -59,7 +60,7 @@ let myQuestionArray = [
       c: "140 BPM",
       d: "160 BPM",
     },
-    correctAnswer: "c",
+    correctAnswer: ["c"],
     type: "radio",
   },
   {
@@ -70,7 +71,7 @@ let myQuestionArray = [
       c: "Wilkinson",
       d: "Electric Universe",
     },
-    correctAnswer: ["a", "d"],
+    correctAnswer: ["Astrix", "Electric Universe"],
     type: "checkbox",
   },
   {
@@ -82,7 +83,7 @@ let myQuestionArray = [
       c: "Universo Paralello, Brasilien",
       d: "Psy-Fi, Nederländerna",
     },
-    correctAnswer: "b",
+    correctAnswer: ["b"],
     type: "radio",
   },
   {
@@ -94,7 +95,7 @@ let myQuestionArray = [
       c: "Hi-tech",
       d: "Darkpsy",
     },
-    correctAnswer: ["a", "c", "d"],
+    correctAnswer: ["Forest", "Hi-tech", "Darkpsy"],
     type: "checkbox",
   },
   {
@@ -104,23 +105,68 @@ let myQuestionArray = [
       a: "Sant",
       b: "Falskt",
     },
-    correctAnswer: "a",
+    correctAnswer: ["a"],
     type: "radio",
   },
 ];
-
 //Variabler för att peka på rätt HTML-element som de olika Div:sen eller buttons.
 const questionDiv = document.querySelector(".questionDiv");
 const correctBtn = document.querySelector("#correctMyQuiz");
 const resultDiv = document.querySelector(".resultDiv");
+let filteredArray = myQuestionArray.filter(filterCorrectAnswerArray); //FILTRERA CORRECTANSWER SÅ MAN FÅR UT DE SOM HAR FLERA RÄTTA SVAR
+let checkboxArray; // Vi deklarerar en variabel för senare användning, en array där de valda svar ska läggas till.
+let matchingAnswersArray; //Skapar variabel för kommande filtrerad array
+let score = 0;
 
 createQuiz();
+
+const allCheckboxes = document.querySelectorAll("input[type='checkbox']"); // Hämta alla checkboxes inför filtrering, finns 12 st checkbox-alternativ
+
+function mergeArrays(arr) {
+  //Funktion för att slå ihop arrayer med varandra så det blir en array (inför jämförelse sen)
+
+  const AnswerCollection = [];
+  filteredArray.forEach((arr) => {
+    AnswerCollection.push(...arr.correctAnswer);
+  });
+  return AnswerCollection;
+}
+const allCorrectAnswersInAnArray = mergeArrays(filteredArray); //Variabeln för alla rätta svar mergade i en enda array.
+console.log(allCorrectAnswersInAnArray);
+
+//----------- FILTRERINGSSTYCKET----------------------------------------------------
+
+let checkboxFilter = () => {
+  resultDiv.innerHTML = ""; // Rensa tidigare sökresultat
+  checkboxArray = [];
+
+  let allCheckedBoxes = document.querySelectorAll(
+    //Hämtar endast ifyllda checkboxes
+    "input[type='checkbox']:checked"
+  );
+
+  allCheckedBoxes.forEach((box) => {
+    checkboxArray.push(box.value);
+  });
+  console.log(checkboxArray);
+
+  matchingAnswersArray = checkboxArray.filter((element) =>
+    allCorrectAnswersInAnArray.includes(element)
+  );
+  console.log(matchingAnswersArray);
+};
+
+allCheckboxes.forEach((box) => {
+  box.addEventListener("change", checkboxFilter);
+});
+//---------------END OF CHECKBOXFILTER.STYCKE------------------------------------------------
 
 correctBtn.addEventListener("click", () => {
   correctMyQuiz();
 });
 
 function createQuiz() {
+  //Funktion för att skapa quizet
   const displayQuiz = []; //Variabel för att spara allt jag vill skriva ut i html
 
   myQuestionArray.forEach((question, index) => {
@@ -129,10 +175,9 @@ function createQuiz() {
     //En if/else if eftersom radio-buttons och checkboxes behöver köras på olika sätt.
     if (question.type === "checkbox") {
       for (letter in question.options) {
-        //pushar in namnet med indexet för annars fungerar inte radioknapparna. De deselectas annars direkt man väljer en ny
         optionsArray.push(
           `<label>
-            <input type="checkbox" name="question${index}" value="${letter}">
+            <input type="checkbox" name="question${index}" value="${question.options[letter]}">
             ${question.options[letter]}
           </label>`
         );
@@ -147,7 +192,6 @@ function createQuiz() {
         );
       }
     }
-
     displayQuiz.push(
       `<div class="question"><strong>${question.question}</strong></div>
       <div class="options"> ${optionsArray.join("")} </div>`
@@ -155,9 +199,35 @@ function createQuiz() {
   });
   questionDiv.innerHTML = displayQuiz.join("");
 }
+function filterCorrectAnswerArray(arr) {
+  //Funktion för att filtrera fram alla frågor med flera rätta svarsval
+  return arr.correctAnswer.length > 1;
+}
+function correctMyQuiz() {
+  //Funktion för att rätta quizet
+  console.log("hej från rätta quiz");
+  let allOptions = document.querySelectorAll(".options"); //sparar alla val
 
-function correctMyQuiz(){
-  
+  checkboxFilter();
+  matchingAnswersArray.forEach(addScore);
+  function addScore() {
+    score++;
+    console.log(score);
+  }
+  //Loopa igenom alla frågor för att kolla vad användaren svarat och ge poäng om svaret överensstämmer med correctAnswer
+  myQuestionArray.forEach((question, index) => {
+    const questionOption = allOptions[index];
+    let isOptionChecked = `input[name=question${index}]:checked`;
+    let userAnswers = (questionOption.querySelector(isOptionChecked) || {})
+      .value;
+    if (question.type === "radio") {
+      if (userAnswers === question.correctAnswer[0]) {
+        score++;
+        console.log("Din radioscore " + score);
+      }
+    }
+  });
+  console.log("Din fullständiga score när rättningen är klar: " + score);
 }
 
 //Darkmode/Lightmode-knapp
