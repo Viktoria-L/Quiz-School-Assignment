@@ -1,12 +1,13 @@
 let myQuestionArray = [
   {
-    question: "1. EDM står för 'electro dance music'",
+    question: "1. EDM står för 'Electro dance music'",
     options: {
       a: "Sant",
       b: "Falskt",
     },
-    correctAnswer: ["b"],
+    correctAnswer: ["Falskt"],
     type: "radio",
+    info: "EDM står för Electronic Dance Music.",
   },
   {
     question:
@@ -17,8 +18,9 @@ let myQuestionArray = [
       c: "Sverige",
       d: "Portugal",
     },
-    correctAnswer: ["b"],
+    correctAnswer: ["Tyskland"],
     type: "radio",
+    info: "Trance utvecklades under tidigt 90-tal och härstammar från Tyskland där den influerades av techno och house-scenen.",
   },
   {
     question:
@@ -27,8 +29,9 @@ let myQuestionArray = [
       a: "Sant",
       b: "Falskt",
     },
-    correctAnswer: ["a"],
+    correctAnswer: ["Sant"],
     type: "radio",
+    info: "Armada Music grundades 2003 av bl.a. Armin Van Buuren.",
   },
   {
     question: "4. Vilka/vilken av följande genres är sub-genres till Techno?",
@@ -40,6 +43,7 @@ let myQuestionArray = [
     },
     correctAnswer: ["Minimal", "Acid", "Ambient"],
     type: "checkbox",
+    info: "Psytrance är en egen genre som inte räknas in att höra till Techno.",
   },
   {
     question:
@@ -48,8 +52,9 @@ let myQuestionArray = [
       a: "Sant",
       b: "Falskt",
     },
-    correctAnswer: ["a"],
+    correctAnswer: ["Sant"],
     type: "radio",
+    info: "Fram till idag har det sänts 1091 avsnitt av A state of Trance.",
   },
   {
     question:
@@ -60,11 +65,13 @@ let myQuestionArray = [
       c: "140 BPM",
       d: "160 BPM",
     },
-    correctAnswer: ["c"],
+    correctAnswer: ["140 BPM"],
     type: "radio",
+    info: "Trance ligger oftast på mellan 130-140 BPM.",
   },
   {
-    question: "7. Vilka av dessa DJ:s gör Psytrance (Psychedelic trance)?",
+    question:
+      "7. Vilka av dessa producenter gör Psytrance (Psychedelic trance)?",
     options: {
       a: "Astrix",
       b: "Swedish House Mafia",
@@ -73,6 +80,7 @@ let myQuestionArray = [
     },
     correctAnswer: ["Astrix", "Electric Universe"],
     type: "checkbox",
+    info: "Astrix och Electric Universe är kända psytrance-producenter.",
   },
   {
     question:
@@ -83,8 +91,9 @@ let myQuestionArray = [
       c: "Universo Paralello, Brasilien",
       d: "Psy-Fi, Nederländerna",
     },
-    correctAnswer: ["b"],
+    correctAnswer: ["BOOM Festival, Portugal"],
     type: "radio",
+    info: "BOOM festival tar emot ca 50 000 besökare.",
   },
   {
     question:
@@ -97,6 +106,7 @@ let myQuestionArray = [
     },
     correctAnswer: ["Forest", "Hi-tech", "Darkpsy"],
     type: "checkbox",
+    info: "Psydub är en genre av psychedelic trance och dub-music, som har en lugnare vibe.",
   },
   {
     question:
@@ -105,80 +115,75 @@ let myQuestionArray = [
       a: "Sant",
       b: "Falskt",
     },
-    correctAnswer: ["a"],
+    correctAnswer: ["Sant"],
     type: "radio",
+    info: "Techno uppstod i mitten av 80-talet i Detroit.",
   },
 ];
 //Variabler för att peka på rätt HTML-element som de olika Div:sen eller buttons.
 const questionDiv = document.querySelector(".questionDiv");
 const correctBtn = document.querySelector("#correctMyQuiz");
 const resultDiv = document.querySelector(".resultDiv");
-let filteredArray = myQuestionArray.filter(filterCorrectAnswerArray); //FILTRERA CORRECTANSWER SÅ MAN FÅR UT DE SOM HAR FLERA RÄTTA SVAR
-let checkboxArray; // Vi deklarerar en variabel för senare användning, en array där de valda svar ska läggas till.
-let matchingAnswersArray; //Skapar variabel för kommande filtrerad array
-let score = 0;
+let questionFour; //  Deklarerar variabler för checkbox-frågorna. De heter frågans rätta plats i quizet , index är -1.
+let questionSeven;
+let questionNine;
+let allCheckedBoxes;
+let isCorrected = false;
 
 createQuiz();
-
+const allRadioButtons = document.querySelectorAll("input[type='radio']"); //??
 const allCheckboxes = document.querySelectorAll("input[type='checkbox']"); // Hämta alla checkboxes inför filtrering, finns 12 st checkbox-alternativ
 
-function mergeArrays(arr) {
-  //Funktion för att slå ihop arrayer med varandra så det blir en array (inför jämförelse sen)
-
-  const AnswerCollection = [];
-  filteredArray.forEach((arr) => {
-    AnswerCollection.push(...arr.correctAnswer);
-  });
-  return AnswerCollection;
-}
-const allCorrectAnswersInAnArray = mergeArrays(filteredArray); //Variabeln för alla rätta svar mergade i en enda array.
-console.log(allCorrectAnswersInAnArray);
-
-//----------- FILTRERINGSSTYCKET----------------------------------------------------
-
+//Filtrerings-funktion för att få ut icheckade checkbox-frågorna i arrays
 let checkboxFilter = () => {
   resultDiv.innerHTML = ""; // Rensa tidigare sökresultat
-  checkboxArray = [];
+  questionFour = [];
+  questionSeven = [];
+  questionNine = [];
 
-  let allCheckedBoxes = document.querySelectorAll(
-    //Hämtar endast ifyllda checkboxes
+  allCheckedBoxes = document.querySelectorAll(
+    //hämtar icheckade boxes
     "input[type='checkbox']:checked"
   );
 
   allCheckedBoxes.forEach((box) => {
-    checkboxArray.push(box.value);
+    if (box.name === "question3") {
+      questionFour.push(box.value);
+    } else if (box.name === "question6") {
+      questionSeven.push(box.value);
+    } else if (box.name === "question8") {
+      questionNine.push(box.value);
+    }
   });
-  console.log(checkboxArray);
-
-  matchingAnswersArray = checkboxArray.filter((element) =>
-    allCorrectAnswersInAnArray.includes(element)
-  );
-  console.log(matchingAnswersArray);
 };
 
 allCheckboxes.forEach((box) => {
   box.addEventListener("change", checkboxFilter);
 });
-//---------------END OF CHECKBOXFILTER.STYCKE------------------------------------------------
 
 correctBtn.addEventListener("click", () => {
-  correctMyQuiz();
-});
+  if (!isCorrected) {
+    correctMyQuiz();
+  } else {
+ myAlert();
+  };
+  });
 
+
+//Funktion för att skapa quizet
 function createQuiz() {
-  //Funktion för att skapa quizet
   const displayQuiz = []; //Variabel för att spara allt jag vill skriva ut i html
 
   myQuestionArray.forEach((question, index) => {
     const optionsArray = []; //variabel för att spara alla options
 
-    //En if/else if eftersom radio-buttons och checkboxes behöver köras på olika sätt.
+    //Loopar igenom alla options och sätter dess label/text
     if (question.type === "checkbox") {
       for (letter in question.options) {
         optionsArray.push(
           `<label>
-            <input type="checkbox" name="question${index}" value="${question.options[letter]}">
-            ${question.options[letter]}
+          <input type="${question.type}" name="question${index}" value="${question.options[letter]}">
+           <small>${question.options[letter]}</small>
           </label>`
         );
       }
@@ -186,12 +191,13 @@ function createQuiz() {
       for (letter in question.options) {
         optionsArray.push(
           `<label>
-          <input type="radio" name="question${index}" value="${letter}">
-            ${question.options[letter]}
+          <input type="${question.type}" name="question${index}" value="${question.options[letter]}">
+           <small>${question.options[letter]}</small>
           </label>`
         );
       }
     }
+
     displayQuiz.push(
       `<div class="question"><strong>${question.question}</strong></div>
       <div class="options"> ${optionsArray.join("")} </div>`
@@ -199,40 +205,87 @@ function createQuiz() {
   });
   questionDiv.innerHTML = displayQuiz.join("");
 }
-function filterCorrectAnswerArray(arr) {
-  //Funktion för att filtrera fram alla frågor med flera rätta svarsval
-  return arr.correctAnswer.length > 1;
-}
+
+//Funktion för att rätta quizet
 function correctMyQuiz() {
-  //Funktion för att rätta quizet
-  console.log("hej från rätta quiz");
-  let allOptions = document.querySelectorAll(".options"); //sparar alla val
+  let score = 0;
+  let allOptions = document.querySelectorAll(".options"); //Variabel som hämtar in alla options
 
   checkboxFilter();
-  matchingAnswersArray.forEach(addScore);
-  function addScore() {
-    score++;
-    console.log(score);
-  }
+
   //Loopa igenom alla frågor för att kolla vad användaren svarat och ge poäng om svaret överensstämmer med correctAnswer
   myQuestionArray.forEach((question, index) => {
+    let para = document.createElement("para");
     const questionOption = allOptions[index];
     let isOptionChecked = `input[name=question${index}]:checked`;
     let userAnswers = (questionOption.querySelector(isOptionChecked) || {})
       .value;
+
     if (question.type === "radio") {
-      if (userAnswers === question.correctAnswer[0]) {
+      incorrectAnswer(userAnswers === question.correctAnswer[0]);
+    }
+    if (question.type === "checkbox") {
+      incorrectAnswer(
+        compareArrays(questionFour, question.correctAnswer) ||
+          compareArrays(questionSeven, question.correctAnswer) ||
+          compareArrays(questionNine, question.correctAnswer)
+      );
+    }
+
+    function incorrectAnswer(condition) {
+      if (condition) {
         score++;
-        console.log("Din radioscore " + score);
+        allOptions[index].style.color = "green";
+        para.innerText = `Du har svarat rätt!\n ${question.info}`;
+        para.style.display = "inline";
+        para.style.color = "black";
+        para.style.fontSize = "12px";
+        allOptions[index].append(para);
+      } else {
+        allOptions[index].style.color = "red";
+        para.innerText = `Du har svarat fel!\n Rätt svar är: ${question.correctAnswer}. ${question.info}`;
+        para.style.display = "inline";
+        para.style.color = "black";
+        para.style.fontSize = "12px";
+        allOptions[index].append(para);
       }
     }
   });
-  console.log("Din fullständiga score när rättningen är klar: " + score);
-}
 
+  let scoreP = document.createElement("p");
+  if (score > 10 * 0.75) {
+    scoreP.innerText = `Grattis! Du fick mycket väl godkänt!\nDu fick ${score} poäng av 10. `;
+    scoreP.style.color = "green";
+  } else if (score >= 10 * 0.5) {
+    scoreP.innerText = `Grattis! Du fick godkänt!\nDu fick ${score} poäng av 10. `;
+    scoreP.style.color = "orange";
+  } else if (score < 10 * 0.5) {
+    scoreP.innerText = `Buhu! Det där gick inte så bra, det blev underkänt.\nDu fick ${score} poäng av 10. `;
+    scoreP.style.color = "red";
+  }
+
+  let resultatH = document.createElement("h2");
+  resultatH.innerText = "Resultat";
+  resultatH.style.color = "rebeccapurple";
+  resultatH.style.fontSize = "18px";
+  resultDiv.append(resultatH, scoreP);
+
+  isCorrected = true;
+}
 //Darkmode/Lightmode-knapp
 let tooglemodeBtn = document.querySelector(".changeMode");
 tooglemodeBtn.addEventListener("click", () => {
   let body = document.body;
   body.classList.toggle("darkmode");
 });
+
+function compareArrays(a, b) {
+  //Funktion för att jämföra arrayer
+  return a.toString() === b.toString();
+}
+
+function myAlert() {
+  let text = "Du har redan rättat ditt quiz!\nTryck OK för att nollställa.";
+  if (confirm(text) == true) {
+    window.location.reload();
+  }}
