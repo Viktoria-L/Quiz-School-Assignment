@@ -1,6 +1,6 @@
 body {
-    background: white;
-    color: black;
+    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+     color: black;
 }
 h1 {
     color:rebeccapurple;
@@ -8,15 +8,28 @@ h1 {
 .darkmode {
     background-color: black;
   color: white;
-
 }
-.changeModes {
+
+.instruktion {
     border: 1px solid black;
+}
+.darkmode .questionDiv {
+    background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
 }
 .questionDiv {
+    background-image: linear-gradient( 135deg, #FFF3B0 10%, #CA26FF 100%);
     border: 1px solid black;
+    margin:auto;
+    display: inline-block;
 }
 
 .resultDiv {
     border: 1px solid black;
 }
+
+/* .changeMode { button
+
+} 
+.#correctMyQuiz { button
+}
+*/
