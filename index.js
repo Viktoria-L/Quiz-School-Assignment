@@ -136,7 +136,6 @@ const allCheckboxes = document.querySelectorAll("input[type='checkbox']"); // H�
 
 //Filtrerings-funktion för att få ut icheckade checkbox-frågorna i arrays
 let checkboxFilter = () => {
-  resultDiv.innerHTML = ""; // Rensa tidigare sökresultat
   questionFour = [];
   questionSeven = [];
   questionNine = [];
