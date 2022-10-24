@@ -123,15 +123,15 @@ let myQuestionArray = [
 //Variabler för att peka på rätt HTML-element som de olika Div:sen eller buttons.
 const questionDiv = document.querySelector(".questionDiv");
 const correctBtn = document.querySelector("#correctMyQuiz");
-const resultDiv = document.querySelector(".resultDiv");
+const resultDiv = document.querySelector(".results");
+let body = document.body;
 let questionFour; //  Deklarerar variabler för checkbox-frågorna. De heter frågans rätta plats i quizet , index är -1.
 let questionSeven;
 let questionNine;
 let allCheckedBoxes;
-let isCorrected = false;
+let isCorrected = false; //Sätter en boolean för att hålla reda på om quizet är rättat eller ej.
 
-createQuiz();
-const allRadioButtons = document.querySelectorAll("input[type='radio']"); //??
+createQuiz(); //Bygger quizet från start
 const allCheckboxes = document.querySelectorAll("input[type='checkbox']"); // Hämta alla checkboxes inför filtrering, finns 12 st checkbox-alternativ
 
 //Filtrerings-funktion för att få ut icheckade checkbox-frågorna i arrays
@@ -141,11 +141,10 @@ let checkboxFilter = () => {
   questionSeven = [];
   questionNine = [];
 
-  allCheckedBoxes = document.querySelectorAll(
-    //hämtar icheckade boxes
-    "input[type='checkbox']:checked"
+  allCheckedBoxes = document.querySelectorAll( //hämtar icheckade boxes
+     "input[type='checkbox']:checked"
   );
-
+//Sorterar in icheckade boxes i arrays för den specifika frågan
   allCheckedBoxes.forEach((box) => {
     if (box.name === "question3") {
       questionFour.push(box.value);
@@ -161,14 +160,13 @@ allCheckboxes.forEach((box) => {
   box.addEventListener("change", checkboxFilter);
 });
 
-correctBtn.addEventListener("click", () => {
+correctBtn.addEventListener("click", () => {//OM quizet inte är rättat så rättas det, annars får man en alert
   if (!isCorrected) {
     correctMyQuiz();
   } else {
- myAlert();
-  };
-  });
-
+    myAlert();
+  }
+});
 
 //Funktion för att skapa quizet
 function createQuiz() {
@@ -215,37 +213,35 @@ function correctMyQuiz() {
 
   //Loopa igenom alla frågor för att kolla vad användaren svarat och ge poäng om svaret överensstämmer med correctAnswer
   myQuestionArray.forEach((question, index) => {
-    let para = document.createElement("para");
+    let para = document.createElement("p");
     const questionOption = allOptions[index];
     let isOptionChecked = `input[name=question${index}]:checked`;
     let userAnswers = (questionOption.querySelector(isOptionChecked) || {})
       .value;
 
     if (question.type === "radio") {
-      incorrectAnswer(userAnswers === question.correctAnswer[0]);
+      correctOrNot(userAnswers === question.correctAnswer[0]);
     }
     if (question.type === "checkbox") {
-      incorrectAnswer(
+      correctOrNot(
         compareArrays(questionFour, question.correctAnswer) ||
           compareArrays(questionSeven, question.correctAnswer) ||
           compareArrays(questionNine, question.correctAnswer)
       );
     }
 
-    function incorrectAnswer(condition) {
+    function correctOrNot(condition) {
       if (condition) {
         score++;
         allOptions[index].style.color = "green";
         para.innerText = `Du har svarat rätt!\n ${question.info}`;
         para.style.display = "inline";
-        para.style.color = "black";
         para.style.fontSize = "12px";
         allOptions[index].append(para);
       } else {
-        allOptions[index].style.color = "red";
+        allOptions[index].style.color = "#ff3c38";
         para.innerText = `Du har svarat fel!\n Rätt svar är: ${question.correctAnswer}. ${question.info}`;
         para.style.display = "inline";
-        para.style.color = "black";
         para.style.fontSize = "12px";
         allOptions[index].append(para);
       }
@@ -275,12 +271,11 @@ function correctMyQuiz() {
 //Darkmode/Lightmode-knapp
 let tooglemodeBtn = document.querySelector(".changeMode");
 tooglemodeBtn.addEventListener("click", () => {
-  let body = document.body;
   body.classList.toggle("darkmode");
-});
+ });
 
+ //Funktion för att jämföra arrayer
 function compareArrays(a, b) {
-  //Funktion för att jämföra arrayer
   return a.toString() === b.toString();
 }
 
@@ -288,4 +283,5 @@ function myAlert() {
   let text = "Du har redan rättat ditt quiz!\nTryck OK för att nollställa.";
   if (confirm(text) == true) {
     window.location.reload();
-  }}
+  }
+}
